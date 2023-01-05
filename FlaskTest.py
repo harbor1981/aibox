@@ -1,9 +1,17 @@
-from flask import Flask
-app = Flask(__name__)
+import base64
+def hello(name):
+   print("hello,%s"%(name))
 
-@app.route('/')
-def hello_world():
-   return 'Hello World'
+def getURL():
+   url="rtsp://192.168.1.5:8554/ds-test"
+   return url
+
+def getBaseCode(url):
+    string = url.encode("utf-8")  # encode()不填时默认为utf-8
+    base16 = base64.b16encode(string)
+    print(base16)
 
 if __name__ == '__main__':
-   app.run(port=5002)
+    getURL()
+    getBaseCode("rtsp://192.168.1.5:8554/ds-test")
+
