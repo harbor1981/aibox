@@ -1,3 +1,6 @@
+import json
+import logging
+
 from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
 app = Flask(__name__)
@@ -28,12 +31,14 @@ def getReturnURL(out_port):
 @app.route('/push',methods = ['GET'])
 def push():
       inputURL = request.args.get('url')
+      # logging.INFO("inputURL")
       print("inputUrl="+inputURL)
       global out_port
       returnURL="rtsp://192.168.1.6:%d/aibox"%(out_port)
       print("returnURL=%s"%(returnURL))
       out_port = out_port + 1
-      return (returnURL)
+      returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})
+      return (returnMSG)
 
 
 if __name__ == '__main__':
