@@ -1,6 +1,9 @@
+import base64
 import json
 import logging
 
+import cv2
+import numpy as np
 from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
 app = Flask(__name__)
@@ -40,6 +43,15 @@ def push():
       returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})
       return (returnMSG)
 
+@app.route('/pushimg',methods=['GET','POST'])
+def pushimg():
+    # 解析图片数据
+    img = base64.b64decode(str(request.form['image']))
+    image_data = np.fromstring(img, np.uint8)
+    image_data = cv2.imdecode(image_data, cv2.IMREAD_COLOR)
+    cv2.imwrite('01.jpg', image_data)
+    print(image_data)
+    return 'koukou'
 
 if __name__ == '__main__':
 
