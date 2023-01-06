@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
 app = Flask(__name__)
-
+out_port= 9600
 @app.route('/')
 def index():
     return render_template("login.html")
@@ -29,15 +29,15 @@ def getReturnURL(out_port):
 def push():
       inputURL = request.args.get('url')
       print("inputUrl="+inputURL)
-      out_port = port2
-      returnURL=getReturnURL(out_port)
+      global out_port
+      returnURL="rtsp://192.168.1.6:%d/aibox"%(out_port)
       print("returnURL=%s"%(returnURL))
-      out_port = port2 + 1
+      out_port = out_port + 1
       return (returnURL)
 
 
 if __name__ == '__main__':
-    port2 = 9600
+
     app.run(host="0.0.0.0",port=5000)
 
     print("come on ")
