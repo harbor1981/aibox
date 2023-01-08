@@ -4,8 +4,9 @@
 import requests
 import requests
 import base64
+import os
 def pushTest():
-    url = 'http://172.18.20.30:5000/push?url=rtsp://417u0941d0.wicp.vip:8554/live/2'
+    url = 'http://192.168.1.6:5000/push?url=rtsp://417u0941d0.wicp.vip:8554/live/2'
     cookies = {'Cookie':'xxxxx'}
     r = requests.get(url, cookies = cookies)
     #print(r.text)
@@ -19,9 +20,12 @@ def pushImgTest():
     res = {"image": image}
     # 访问服务
     _ = requests.post("http://127.0.0.1:5000/pushimg", data=res)
-
+def invoke():
+    val=os.system('ls -al')
+    print(val)
 if __name__ == '__main__':
-    # pushTest()
-    pushImgTest()
+    pushTest()
+    # invoke()
+    # pushImgTest()
 
 

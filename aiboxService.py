@@ -1,11 +1,14 @@
 import base64
 import json
 import logging
-
+import os
 import cv2
 import numpy as np
 from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
+import time
+from multiprocessing import Process
+from aibox import invoke
 app = Flask(__name__)
 out_port= 9600
 @app.route('/')
@@ -31,12 +34,22 @@ def getReturnURL(out_port):
     return_url="rtsp://192.168.1.6:%d/ds-test"%(out_port)
     return return_url
 
+
+def alibaba(name,inputURL):
+    result=0
+    for i in range(1000):
+        result += i
+        print('hello,%s,%d' % (inputURL, i))
+        time.sleep(5)
+
 @app.route('/push',methods = ['GET'])
 def push():
+      global out_port
       inputURL = request.args.get('url')
       # logging.INFO("inputURL")
       print("inputUrl="+inputURL)
-      global out_port
+      my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
+      my_process.start()
       returnURL="rtsp://192.168.1.6:%d/aibox"%(out_port)
       print("returnURL=%s"%(returnURL))
       out_port = out_port + 1
@@ -45,7 +58,7 @@ def push():
 
 @app.route('/pushimg',methods=['GET','POST'])
 def pushimg():
-    # 解析图片数据
+    #
     img = base64.b64decode(str(request.form['image']))
     image_data = np.fromstring(img, np.uint8)
     image_data = cv2.imdecode(image_data, cv2.IMREAD_COLOR)
