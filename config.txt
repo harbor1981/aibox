@@ -55,11 +55,11 @@
 [property]
 gpu-id=0
 net-scale-factor=0.0039215697906911373
-model-file=./models/resnet10.caffemodel
-proto-file=./models/resnet10.prototxt
-model-engine-file=./models/resnet10.caffemodel_b1_gpu0_int8.engine
-labelfile-path=./models/labels.txt
-int8-calib-file=./models/cal_trt.bin
+model-file=./model1/resnet10.caffemodel
+proto-file=./model1/resnet10.prototxt
+model-engine-file=./model1/resnet10.caffemodel_b1_gpu0_int8.engine
+labelfile-path=./model1/labels.txt
+int8-calib-file=./model1/cal_trt.bin
 force-implicit-batch-dim=1
 batch-size=1
 network-mode=1
