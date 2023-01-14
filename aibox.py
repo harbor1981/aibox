@@ -368,10 +368,10 @@ def main(args):
         % (updsink_port_num, codec)
     )
     factory.set_shared(True)
-    server.get_mount_points().add_factory("/ds-test", factory)
+    server.get_mount_points().add_factory("/aibox", factory)
 
     print(
-        "\n *** DeepStream: Launched RTSP Streaming at rtsp://localhost:%d/ds-test ***\n\n"
+        "\n *** DeepStream: Launched RTSP Streaming at rtsp://localhost:%d/aibox ***\n\n"
         % rtsp_port_num
     )
 
