@@ -54,6 +54,7 @@
 
 [property]
 gpu-id=0
+
 net-scale-factor=0.0039215697906911373
 model-file=../../../../samples/models/Primary_Detector/resnet10.caffemodel
 proto-file=../../../../samples/models/Primary_Detector/resnet10.prototxt
