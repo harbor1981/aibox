@@ -9,9 +9,13 @@ import FlaskTest
 import time
 from multiprocessing import Process
 from aibox import invoke
+from flask_cors import CORS
+
 app = Flask(__name__)
 out_port= 9600
 @app.route('/')
+# r'/*' 是通配符，让本服务器所有的 URL 都允许跨域请求
+CORS(app, resources=r'/*')
 def index():
     return render_template("login.html")
 
@@ -33,7 +37,6 @@ def login():
 def getReturnURL(out_port):
     return_url="rtsp://192.168.1.6:%d/ds-test"%(out_port)
     return return_url
-
 
 def alibaba(name,inputURL):
     result=0
