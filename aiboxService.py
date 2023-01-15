@@ -8,8 +8,9 @@ from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
 import time
 from multiprocessing import Process
-from aibox import invoke
+# from aibox import invoke
 from flask_cors import CORS
+import utils
 
 app = Flask(__name__)
 ##r'/*' 是通配符，让本服务器所有的 URL 都允许跨域请求
@@ -46,8 +47,31 @@ def alibaba(name,inputURL):
         print('hello,%s,%d' % (inputURL, i))
         time.sleep(5)
 
+@app.route('/stop',methods = ['GET'])
+def stop():
+      port = request.args.get('port')
+      print("port="+port)
+      utils.killOneProcess(out_port)
+      returnMSG=json.dumps({"code":200,"msg":"","data":"complete"})
+      return (returnMSG)
+
 @app.route('/push',methods = ['GET'])
 def push():
+      global out_port
+      utils.killOneProcess(out_port)
+      host_ip=utils.get_host_ip()
+      inputURL = request.args.get('url')
+      # logging.INFO("inputURL")
+      print("inputUrl="+inputURL)
+      # my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
+      # my_process.start()
+      returnURL="rtsp://%s:%d/aibox"%(host_ip,out_port)
+      print("returnURL=%s"%(returnURL))
+      returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})
+      return (returnMSG)
+
+@app.route('/push2',methods = ['GET'])
+def push2():
       global out_port
       inputURL = request.args.get('url')
       # logging.INFO("inputURL")
