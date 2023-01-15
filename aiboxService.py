@@ -12,10 +12,11 @@ from aibox import invoke
 from flask_cors import CORS
 
 app = Flask(__name__)
+##r'/*' 是通配符，让本服务器所有的 URL 都允许跨域请求
+CORS(app, resources=r'/*')
 out_port= 9600
 @app.route('/')
-# r'/*' 是通配符，让本服务器所有的 URL 都允许跨域请求
-CORS(app, resources=r'/*')
+
 def index():
     return render_template("login.html")
 
