@@ -84,6 +84,15 @@ def push2():
       returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})
       return (returnMSG)
 
+@app.route('/push',methods = ['GET'])
+def push():
+      global out_port
+      port = request.args.get('kill')
+      print("port="+port)
+
+      returnMSG=json.dumps({"code":200,"msg":"","data":""})
+      return (returnMSG)
+
 @app.route('/pushimg',methods=['GET','POST'])
 def pushimg():
     #

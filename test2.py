@@ -10,4 +10,13 @@ def alibaba(name):
 
 
 if __name__ == '__main__':
-    alibaba('quejinlong')
+    # alibaba('quejinlong')
+    import gi
+
+    gi.require_version("Gtk", "3.0")
+    from gi.repository import Gtk
+
+    window = Gtk.Window(title="Hello World")
+    window.show()
+    window.connect("destroy", Gtk.main_quit)
+    Gtk.main()

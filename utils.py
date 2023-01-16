@@ -1,6 +1,12 @@
 import socket
 import os
 import signal
+import string
+import random
+
+import numpy as np
+
+
 def get_host_ip():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,8 +34,38 @@ def killOneProcess(port):
     command="kill -9 $(netstat -nlp | grep :"+str(port)+" | awk '{print $7}' | awk -F'/' '{{ print $1 }}')"
     os.system(command)
 
+def generateFiles(nums):
+    a = 1
+    while (a <= nums):
+        fwrite = str(a) + "git submodule update --init的使用方式git submodule update --init的使用方式 \n"
+        file = open("/home/quejl/files/" + str(a) + ".txt", "a")
+        f = 0
+        while (f <= 100):
+            f += 1
+            file.write(fwrite)
+        file.close()
+        a += 1
+def generateBigFile():
+    n = 1024 ** 2  # 1 Mb of text
+    letters = np.array(list(chr(ord('a') + i) for i in range(26)))
+    chars = np.random.choice(np.fromstring(letters, dtype='<U1'), n)
+    with open('/home/quejl/textfile111.txt', 'w+') as f:
+        f.write(''.join(chars))
+def generateBigFiles(nums,filePath):
+    a = 1
+    letters = np.array(list(chr(ord('a') + i) for i in range(26)))
+    while (a <= nums):
+        n = 100 ** 2*random.randint(1,500)  # 0.1Mb-5Mb of text
+        chars = np.random.choice(np.fromstring(letters, dtype='<U1'), n)
+        with open(filePath + str(a) + ".txt", 'w+') as f:
+            f.write(''.join(chars))
+        a += 1
+
+
 if __name__ == '__main__':
-    killOneProcess(5000)
+    generateBigFiles(2,"/home/quejl/files2/")
+    # generateBigFile()
+    # killOneProcess(5000)
     # out_port=5000
     # ps_ports = [out_port]
     # killProcesses(*get_pid(*ps_ports))
