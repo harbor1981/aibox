@@ -7,7 +7,7 @@ import base64
 import os
 def pushTest():
     url = 'http://192.168.1.6:5000/push?url=rtsp://417u0941d0.wicp.vip:8554/live/'
-    url = 'http://192.168.1.6:5000/push?url=rtsp://139.196.82.12:6018/live/'
+    url = 'http://192.168.200.8:5000/stop?port=9600'
     cookies = {'Cookie':'xxxxx'}
     r = requests.get(url, cookies = cookies)
     #print(r.text)

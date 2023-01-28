@@ -8,7 +8,7 @@ from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
 import time
 from multiprocessing import Process
-# from aibox import invoke
+from aibox import invoke
 from flask_cors import CORS
 import utils
 
@@ -63,8 +63,8 @@ def push():
       inputURL = request.args.get('url')
       # logging.INFO("inputURL")
       print("inputUrl="+inputURL)
-      # my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
-      # my_process.start()
+      my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
+      my_process.start()
       returnURL="rtsp://%s:%d/aibox"%(host_ip,out_port)
       print("returnURL=%s"%(returnURL))
       returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})
@@ -84,15 +84,6 @@ def push2():
       returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})
       return (returnMSG)
 
-@app.route('/push',methods = ['GET'])
-def push():
-      global out_port
-      port = request.args.get('kill')
-      print("port="+port)
-
-      returnMSG=json.dumps({"code":200,"msg":"","data":""})
-      return (returnMSG)
-
 @app.route('/pushimg',methods=['GET','POST'])
 def pushimg():
     #
@@ -105,6 +96,6 @@ def pushimg():
 
 if __name__ == '__main__':
 
-    app.run(host="0.0.0.0",port=5000)
+    app.run(host="0.0.0.0",port=5002)
 
     print("come on ")

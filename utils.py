@@ -63,7 +63,7 @@ def generateBigFiles(nums,filePath):
 
 
 if __name__ == '__main__':
-    generateBigFiles(2,"/home/quejl/files2/")
+    generateBigFiles(100,"/home/quejl/files2/")
     # generateBigFile()
     # killOneProcess(5000)
     # out_port=5000
