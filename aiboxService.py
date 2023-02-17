@@ -58,7 +58,7 @@ def stop():
 @app.route('/push',methods = ['GET'])
 def push():
       global out_port
-      utils.killOneProcess(out_port)
+      # utils.killOneProcess(out_port)
       host_ip=utils.get_host_ip()
       inputURL = request.args.get('url')
       # logging.INFO("inputURL")
