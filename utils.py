@@ -5,6 +5,7 @@ import string
 import random
 
 import numpy as np
+import psutil as psutil
 
 
 def get_host_ip():
@@ -28,6 +29,15 @@ def get_pid(*ports):
     if pid:
       pids.append(int(pid))
   return pids
+def killProcess(processName):
+    pids = psutil.pids()
+    for pid in pids:
+        p = psutil.Process(pid)
+        # get process name according to pid
+        process_name = p.name()
+        if process_name.find(processName)!=-1:
+            print("Process name is: %s, pid is: %s" % (process_name, pid))
+            os.kill(pid, signal.SIGKILL)  
 
 def killOneProcess(port):
     '''root authority is required'''
@@ -63,7 +73,8 @@ def generateBigFiles(nums,filePath):
 
 
 if __name__ == '__main__':
-    generateBigFiles(100,"/home/quejl/files2/")
+    killProcess("alibaba")
+    # generateBigFiles(100,"/home/quejl/files2/")
     # generateBigFile()
     # killOneProcess(5000)
     # out_port=5000
