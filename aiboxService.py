@@ -51,18 +51,13 @@ def alibaba(name,inputURL):
 def stop():
       port = request.args.get('port')
       print("port="+port)
-      if port==-1:
-          ## kill all processes name "aiboxService"
-          utils.killProcess("aiboxService")
-      else:
-          utils.killOneProcess(port)
-      returnMSG=json.dumps({"code":200,"msg":"","data":"complete"})
+      code,msg,data=utils.killProcessByPort(port)
+      returnMSG=json.dumps({"code":code,"msg":msg,"data":data})
       return (returnMSG)
 
-@app.route('/push',methods = ['GET'])
-def push():
+@app.route('/push2',methods = ['GET'])
+def push2():
       global out_port
-      # utils.killOneProcess(out_port)
       host_ip=utils.get_host_ip()
       inputURL = request.args.get('url')
       # logging.INFO("inputURL")
@@ -74,15 +69,16 @@ def push():
       returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})
       return (returnMSG)
 
-@app.route('/push2',methods = ['GET'])
-def push2():
+@app.route('/push',methods = ['GET'])
+def push():
       global out_port
+      host_ip = utils.get_host_ip()
       inputURL = request.args.get('url')
       # logging.INFO("inputURL")
       print("inputUrl="+inputURL)
       my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
       my_process.start()
-      returnURL="rtsp://192.168.1.6:%d/aibox"%(out_port)
+      returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
       print("returnURL=%s"%(returnURL))
       out_port = out_port + 1
       returnMSG=json.dumps({"code":200,"msg":"","data":returnURL})

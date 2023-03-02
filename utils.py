@@ -29,7 +29,7 @@ def get_pid(*ports):
     if pid:
       pids.append(int(pid))
   return pids
-def killProcess(processName):
+def killProcessByName(processName):
     pids = psutil.pids()
     for pid in pids:
         p = psutil.Process(pid)
@@ -39,10 +39,27 @@ def killProcess(processName):
             print("Process name is: %s, pid is: %s" % (process_name, pid))
             os.kill(pid, signal.SIGKILL)  
 
-def killOneProcess(port):
-    '''root authority is required'''
-    command="kill -9 $(netstat -nlp | grep :"+str(port)+" | awk '{print $7}' | awk -F'/' '{{ print $1 }}')"
-    os.system(command)
+def killProcessByPort(port):
+    code='200'
+    msg='success'
+    data='data'
+    if port==-1:
+        for i in range(30):
+            command="kill -9 $(netstat -nlp | grep :"+str(6000+i)+" | awk '{print $7}' | awk -F'/' '{{ print $1 }}')"
+            # print(command)
+            os.system(command)
+        msg="all processes have been killed"
+        return code,msg,data
+    elif 9600<=port<=9630:
+        '''root authority is required'''
+        command="kill -9 $(netstat -nlp | grep :"+str(port)+" | awk '{print $7}' | awk -F'/' '{{ print $1 }}')"
+        os.system(command)
+        msg='%d has been killed'%(port)
+        return code,msg,data
+    else:
+        code='-1'
+        msg='error!port must in (9600,9630)'
+        return code,msg,data
 
 def generateFiles(nums):
     a = 1
@@ -73,7 +90,9 @@ def generateBigFiles(nums,filePath):
 
 
 if __name__ == '__main__':
-    killProcess("alibaba")
+    code,msg,data=killProcessByPort(6200)
+    print("code=%s,msg=%s,data=%s"%(code,msg,data))
+    # killProcessByName("alibaba")
     # generateBigFiles(100,"/home/quejl/files2/")
     # generateBigFile()
     # killOneProcess(5000)
