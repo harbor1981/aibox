@@ -43,18 +43,19 @@ def killProcessByPort(port):
     code='200'
     msg='success'
     data='data'
-    if port==-1:
+    if port==0:
+        print("111111111111111111111111111111111")
         for i in range(30):
-            command="kill -9 $(netstat -nlp | grep :"+str(6000+i)+" | awk '{print $7}' | awk -F'/' '{{ print $1 }}')"
-            # print(command)
+            command="kill -9 $(netstat -nlp | grep :"+str(9600+i)+" | awk '{print $7}' | awk -F'/' '{{ print $1 }}')"
+            print(command)
             os.system(command)
         msg="all processes have been killed"
         return code,msg,data
-    elif 9600<=port<=9630:
+    elif 9600<=port and port<9630:
         '''root authority is required'''
         command="kill -9 $(netstat -nlp | grep :"+str(port)+" | awk '{print $7}' | awk -F'/' '{{ print $1 }}')"
         os.system(command)
-        msg='%d has been killed'%(port)
+        msg='%s has been killed'%(port)
         return code,msg,data
     else:
         code='-1'
@@ -90,7 +91,7 @@ def generateBigFiles(nums,filePath):
 
 
 if __name__ == '__main__':
-    code,msg,data=killProcessByPort(6200)
+    code,msg,data=killProcessByPort(-1)
     print("code=%s,msg=%s,data=%s"%(code,msg,data))
     # killProcessByName("alibaba")
     # generateBigFiles(100,"/home/quejl/files2/")

@@ -51,7 +51,7 @@ def alibaba(name,inputURL):
 def stop():
       port = request.args.get('port')
       print("port="+port)
-      code,msg,data=utils.killProcessByPort(port)
+      code,msg,data=utils.killProcessByPort(int(port))
       returnMSG=json.dumps({"code":code,"msg":msg,"data":data})
       return (returnMSG)
 
