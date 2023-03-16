@@ -509,17 +509,18 @@ def parse_args():
     rtsp_out_port=args.port
     print(stream_path)
     return stream_path
-def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9554):
+def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600):
     global codec
     global bitrate
     global stream_path
     global gie
     global rtsp_out_port
-    gie = Pgie
     codec = Pcodec
     bitrate = Pbitrate
-    stream_path = []
-    stream_path.append(Pinput)
+    # stream_path = []
+    # stream_path.append(Pinput)
+    stream_path=Pinput.split("|")
+    gie = Pgie
     rtsp_out_port = Pport
     sys.exit(main(stream_path))
     return stream_path
