@@ -527,6 +527,6 @@ def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600):
 
 if __name__ == '__main__':
     #stream_path = parse_args()
-    #invoke(Pinput='rtsp://139.196.82.12:6018/live/2',Pport=9600)
+    #invoke(Pinput='rtsp://199.19.110.7:7103/live/park',Pport=9600)
     #sys.exit(main(stream_path))
     print()
