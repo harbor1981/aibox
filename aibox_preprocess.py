@@ -32,7 +32,6 @@ from gi.repository import Gst, GstRtspServer, GLib
 import configparser
 
 import argparse
-import utils
 
 MAX_DISPLAY_LEN = 64
 PGIE_CLASS_ID_VEHICLE = 0
@@ -463,11 +462,10 @@ def main(args):
     )
     factory.set_shared(True)
     server.get_mount_points().add_factory("/aibox", factory)
-    host_ip = utils.get_host_ip()
 
     print(
-        "\n *** DeepStream: Launched RTSP Streaming at rtsp://%s:%d/aibox ***\n\n"
-        % (host_ip,rtsp_port_num)
+        "\n *** DeepStream: Launched RTSP Streaming at rtsp://localhost:%d/aibox ***\n\n"
+        % rtsp_port_num
     )
 
     # start play back and listen to events
@@ -529,6 +527,6 @@ def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600):
 
 if __name__ == '__main__':
     #stream_path = parse_args()
-    invoke(Pinput='rtsp://199.19.110.7:7103/live/park',Pport=9600)
+    #invoke(Pinput='rtsp://139.196.82.12:6018/live/2',Pport=9600)
     #sys.exit(main(stream_path))
     print()
