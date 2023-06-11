@@ -86,6 +86,7 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
             PGIE_CLASS_ID_ROADSIGN: 0
         }
         frame_number = frame_meta.frame_num
+        print("frame_number=%d"%(frame_number))
         num_rects = frame_meta.num_obj_meta
         l_obj = frame_meta.obj_meta_list
         while l_obj is not None:
