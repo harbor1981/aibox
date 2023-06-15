@@ -94,6 +94,26 @@ def pushimg():
     print(image_data)
     return 'koukou'
 
+@app.route('/process_json', methods=['POST'])
+def process_json():
+    json_data = request.get_json()
+
+    # 检查JSON数据中是否存在"post_url"和"return_url"字段
+    if 'post_url' in json_data and 'return_url' in json_data:
+        post_url = json_data['post_url']
+        return_url = json_data['return_url']
+        invoke(post_url,return_url)
+        # 在这里对"user_name"和"user_count"进行进一步处理
+        # 例如打印它们或执行其他操作
+        print(f"User Name: {post_url}")
+        print(f"User Count: {return_url}")
+
+        # 返回响应
+        return 'JSON数据已解析'
+    else:
+        # JSON数据中缺少必需的字段
+        return 'JSON数据格式错误'
+
 if __name__ == '__main__':
 
     app.run(host="0.0.0.0",port=5002)
