@@ -17,7 +17,6 @@ app = Flask(__name__)
 CORS(app, resources=r'/*')
 out_port= 9600
 @app.route('/')
-
 def index():
     return render_template("login.html")
 
@@ -35,10 +34,6 @@ def login():
       print(2)
       user = request.args.get('nm')
       return redirect(url_for('success',name = user))
-
-def getReturnURL(out_port):
-    return_url="rtsp://192.168.1.6:%d/ds-test"%(out_port)
-    return return_url
 
 def alibaba(name,inputURL):
     result=0
@@ -74,7 +69,6 @@ def push():
       global out_port
       host_ip = utils.get_host_ip()
       inputURL = request.args.get('url')
-      # logging.INFO("inputURL")
       print("inputUrl="+inputURL)
       my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
       my_process.start()
@@ -94,8 +88,8 @@ def pushimg():
     print(image_data)
     return 'koukou'
 
-@app.route('/process_json', methods=['POST'])
-def process_json():
+@app.route('/count', methods=['POST'])
+def count():
     json_data = request.get_json()
 
     # 检查JSON数据中是否存在"post_url"和"return_url"字段
@@ -118,4 +112,3 @@ if __name__ == '__main__':
 
     app.run(host="0.0.0.0",port=5002)
 
-    print("come on ")
