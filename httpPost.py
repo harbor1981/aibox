@@ -18,12 +18,12 @@ def post_result(Vehicle_count=0, Person_count=0, callback_url='http://199.19.110
     else:
         print('请求失败')
     print(response.text)
-def post():
-    countAPI_url = 'http://192.168.1.11:5002/count'
+def post(countAPI_url,rtsp_url,callback_url):
     message = {
-        'rtsp_url': "rtsp://199.19.110.7:7103/live/park",
-        'callback_url': "http://199.19.110.7:7104/api/Callback"
+        'rtsp_url1': rtsp_url,
+        'callback_url': callback_url
     }
+
     response = requests.post(countAPI_url, json=message, headers={'content-type': 'application/json;charset=UTF-8'})
     headers = {'Content-Type': 'application/json;charset=UTF-8'}
     # response = requests.request("post",post_url, json=message, headers=headers)
@@ -36,6 +36,6 @@ def post():
 
 if __name__ == '__main__':
     # post_result(10,100,'http://192.168.1.11:5002/process_json')
-    post()
+    post('http://192.168.1.11:5002/count',"rtsp://199.19.110.7:7103/live/park","http://199.19.110.7:7104/api/Callback")
 
 
