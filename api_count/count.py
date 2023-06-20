@@ -17,7 +17,7 @@
 # limitations under the License.
 ################################################################################
 import sys
-sys.path.append("../")
+sys.path.append("../../")
 from common.bus_call import bus_call
 from common.is_aarch_64 import is_aarch64
 import pyds
@@ -118,7 +118,7 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
             py_nvosd_text_params.display_text = "Frame Number={} Number of Objects={} Vehicle_count={} Person_count={}".format(
                 frame_number, num_rects, obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON])
 
-            httpPost.post_result(obj_counter[PGIE_CLASS_ID_VEHICLE],obj_counter[PGIE_CLASS_ID_PERSON])
+            httpPost.post_result(obj_counter[PGIE_CLASS_ID_VEHICLE],obj_counter[PGIE_CLASS_ID_PERSON],callback_url)
             # Now set the offsets where the string should appear
             py_nvosd_text_params.x_offset = 10
             py_nvosd_text_params.y_offset = 12
@@ -396,10 +396,10 @@ def main(args):
 
     if gie=="nvinfer":
         #pgie.set_property("config-file-path", "dstest1_pgie_config.txt")
-        pgie.set_property("config-file-path", "config.txt")
+        pgie.set_property("config-file-path", "./api_count/dstest1_pgie_config.txt")
     else:
         #pgie.set_property("config-file-path", "dstest1_pgie_inferserver_config.txt")
-        pgie.set_property("config-file-path", "config2.txt")
+        pgie.set_property("config-file-path", "./api_count/dstest1_pgie_inferserver_config.txt")
 
 
     pgie_batch_size = pgie.get_property("batch-size")
@@ -500,6 +500,7 @@ def parse_args():
                   help="Set the encoding bitrate ", type=int)
     parser.add_argument("-p", "--port", default=9554,
                   help="Set the rtsp out port ", type=int)
+    parser.add_argument("-c", "--callback_url",help="Set the callback url",default=[""], required=True )
 
     # Check input arguments
     if len(sys.argv)==1:
@@ -511,19 +512,22 @@ def parse_args():
     global stream_path
     global gie
     global rtsp_out_port
+    global callback_url
     gie = args.gie
     codec = args.codec
     bitrate = args.bitrate
     stream_path = args.input
     rtsp_out_port=args.port
+    callback_url = args.callback_url
     print(stream_path)
     return stream_path
-def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600):
+def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600,Pcallback_url=""):
     global codec
     global bitrate
     global stream_path
     global gie
     global rtsp_out_port
+    global callback_url
     codec = Pcodec
     bitrate = Pbitrate
     # stream_path = []
@@ -531,6 +535,7 @@ def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600):
     stream_path=Pinput.split("|")
     gie = Pgie
     rtsp_out_port = Pport
+    callback_url = Pcallback_url
     sys.exit(main(stream_path))
     return stream_path
 

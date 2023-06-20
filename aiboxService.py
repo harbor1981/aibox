@@ -8,7 +8,7 @@ from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
 import time
 from multiprocessing import Process
-from aibox import invoke
+from api_count.count import invoke
 from flask_cors import CORS
 import utils
 
@@ -90,23 +90,27 @@ def pushimg():
 
 @app.route('/count', methods=['POST'])
 def count():
+    global out_port
+    host_ip = utils.get_host_ip()
     json_data = request.get_json()
+    if 'rtsp_url' in json_data and 'callback_url' in json_data:
+        try:
+            rtsp_url = json_data['rtsp_url']
+            callback_url = json_data['callback_url']
+            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url))
+            my_process.start()
+            returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
+            print("returnURL=%s" % (returnURL))
+            out_port = out_port + 1
+            returnMSG = json.dumps({"code": 200, "msg": "invoke count process successfully", "data": returnURL})
+            return (returnMSG)
+        except:
+            returnMSG = json.dumps({"code": -1, "msg": "exception,please check ", "data": ""})
+            return (returnMSG)
 
-    # 检查JSON数据中是否存在"post_url"和"return_url"字段
-    if 'post_url' in json_data and 'return_url' in json_data:
-        post_url = json_data['post_url']
-        return_url = json_data['return_url']
-        invoke(post_url,return_url)
-        # 在这里对"user_name"和"user_count"进行进一步处理
-        # 例如打印它们或执行其他操作
-        print(f"User Name: {post_url}")
-        print(f"User Count: {return_url}")
-
-        # 返回响应
-        return 'JSON数据已解析'
     else:
-        # JSON数据中缺少必需的字段
-        return 'JSON数据格式错误'
+        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url和", "data": ""})
+        return (returnMSG)
 
 if __name__ == '__main__':
 
