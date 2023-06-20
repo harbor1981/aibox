@@ -32,6 +32,8 @@ from gi.repository import Gst, GstRtspServer, GLib
 import configparser
 
 import argparse
+import utils
+import httpPost
 
 MAX_DISPLAY_LEN = 64
 PGIE_CLASS_ID_VEHICLE = 0
@@ -85,52 +87,57 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
             PGIE_CLASS_ID_ROADSIGN: 0
         }
         frame_number = frame_meta.frame_num
-        num_rects = frame_meta.num_obj_meta
-        l_obj = frame_meta.obj_meta_list
-        while l_obj is not None:
-            try:
-                # Casting l_obj.data to pyds.NvDsObjectMeta
-                obj_meta = pyds.NvDsObjectMeta.cast(l_obj.data)
-            except StopIteration:
-                break
-            obj_counter[obj_meta.class_id] += 1
-            obj_meta.rect_params.border_color.set(0.0, 0.0, 1.0, 0.8)  # 0.8 is alpha (opacity)
-            try:
-                l_obj = l_obj.next
-            except StopIteration:
-                break
+        if(frame_number%50==0):
+            print("frame_number=%d" % (frame_number))
+            num_rects = frame_meta.num_obj_meta
+            l_obj = frame_meta.obj_meta_list
+            while l_obj is not None:
+                try:
+                    # Casting l_obj.data to pyds.NvDsObjectMeta
+                    obj_meta = pyds.NvDsObjectMeta.cast(l_obj.data)
+                except StopIteration:
+                    break
+                obj_counter[obj_meta.class_id] += 1
+                obj_meta.rect_params.border_color.set(0.0, 0.0, 1.0, 0.8)  # 0.8 is alpha (opacity)
+                try:
+                    l_obj = l_obj.next
+                except StopIteration:
+                    break
 
-        # Acquiring a display meta object. The memory ownership remains in
-        # the C code so downstream plugins can still access it. Otherwise
-        # the garbage collector will claim it when this probe function exits.
-        display_meta = pyds.nvds_acquire_display_meta_from_pool(batch_meta)
-        display_meta.num_labels = 1
-        py_nvosd_text_params = display_meta.text_params[0]
-        # Setting display text to be shown on screen
-        # Note that the pyds module allocates a buffer for the string, and the
-        # memory will not be claimed by the garbage collector.
-        # Reading the display_text field here will return the C address of the
-        # allocated string. Use pyds.get_string() to get the string content.
-        py_nvosd_text_params.display_text = "Frame Number={} Number of Objects={} Vehicle_count={} Person_count={}".format(
-            frame_number, num_rects, obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON])
+            # Acquiring a display meta object. The memory ownership remains in
+            # the C code so downstream plugins can still access it. Otherwise
+            # the garbage collector will claim it when this probe function exits.
+            display_meta = pyds.nvds_acquire_display_meta_from_pool(batch_meta)
+            display_meta.num_labels = 1
+            py_nvosd_text_params = display_meta.text_params[0]
+            # Setting display text to be shown on screen
+            # Note that the pyds module allocates a buffer for the string, and the
+            # memory will not be claimed by the garbage collector.
+            # Reading the display_text field here will return the C address of the
+            # allocated string. Use pyds.get_string() to get the string content.
+            py_nvosd_text_params.display_text = "Frame Number={} Number of Objects={} Vehicle_count={} Person_count={}".format(
+                frame_number, num_rects, obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON])
 
-        # Now set the offsets where the string should appear
-        py_nvosd_text_params.x_offset = 10
-        py_nvosd_text_params.y_offset = 12
+            httpPost.post_result(obj_counter[PGIE_CLASS_ID_VEHICLE],obj_counter[PGIE_CLASS_ID_PERSON])
+            # Now set the offsets where the string should appear
+            py_nvosd_text_params.x_offset = 10
+            py_nvosd_text_params.y_offset = 12
 
-        # Font , font-color and font-size
-        py_nvosd_text_params.font_params.font_name = "Serif"
-        py_nvosd_text_params.font_params.font_size = 10
-        # set(red, green, blue, alpha); set to White
-        py_nvosd_text_params.font_params.font_color.set(1.0, 1.0, 1.0, 1.0)
+            # Font , font-color and font-size
+            py_nvosd_text_params.font_params.font_name = "Serif"
+            py_nvosd_text_params.font_params.font_size = 10
+            # set(red, green, blue, alpha); set to White
+            py_nvosd_text_params.font_params.font_color.set(1.0, 1.0, 1.0, 1.0)
 
-        # Text background color
-        py_nvosd_text_params.set_bg_clr = 1
-        # set(red, green, blue, alpha); set to Black
-        py_nvosd_text_params.text_bg_clr.set(0.0, 0.0, 0.0, 1.0)
-        # Using pyds.get_string() to get display_text as string
-        print(pyds.get_string(py_nvosd_text_params.display_text))
-        pyds.nvds_add_display_meta_to_frame(frame_meta, display_meta)
+            # Text background color
+            py_nvosd_text_params.set_bg_clr = 1
+            # set(red, green, blue, alpha); set to Black
+            py_nvosd_text_params.text_bg_clr.set(0.0, 0.0, 0.0, 1.0)
+            # Using pyds.get_string() to get display_text as string
+            print(pyds.get_string(py_nvosd_text_params.display_text))
+            pyds.nvds_add_display_meta_to_frame(frame_meta, display_meta)
+
+
         try:
             l_frame = l_frame.next
         except StopIteration:
@@ -427,8 +434,9 @@ def main(args):
 
     streammux.link(pgie)
     pgie.link(nvvidconv)
-    nvvidconv.link(tiler)
-    tiler.link(nvosd)
+    # nvvidconv.link(tiler)
+    # tiler.link(nvosd)
+    nvvidconv.link(nvosd)
     nvosd.link(nvvidconv_postosd)
     nvvidconv_postosd.link(caps)
     caps.link(encoder)
@@ -462,10 +470,11 @@ def main(args):
     )
     factory.set_shared(True)
     server.get_mount_points().add_factory("/aibox", factory)
+    host_ip = utils.get_host_ip()
 
     print(
-        "\n *** DeepStream: Launched RTSP Streaming at rtsp://localhost:%d/aibox ***\n\n"
-        % rtsp_port_num
+        "\n *** DeepStream: Launched RTSP Streaming at rtsp://%s:%d/aibox ***\n\n"
+        % (host_ip,rtsp_port_num)
     )
 
     # start play back and listen to events
@@ -527,6 +536,6 @@ def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600):
 
 if __name__ == '__main__':
     #stream_path = parse_args()
-    #invoke(Pinput='rtsp://199.19.110.7:7103/live/park',Pport=9600)
+    invoke(Pinput='rtsp://199.19.110.7:7103/live/park',Pport=9600)
     #sys.exit(main(stream_path))
     print()
