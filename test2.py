@@ -1,3 +1,4 @@
+import platform
 import time
 
 
@@ -12,6 +13,10 @@ def alibaba(name):
 def split(path):
     print(path.split("|"))
 
+def getPlatformInfo():
+
+    print("platform.platform():%s" % (platform.platform()))
+
 if __name__ == '__main__':
     # alibaba('quejinlong')
     # import gi
@@ -23,5 +28,6 @@ if __name__ == '__main__':
     # window.show()
     # window.connect("destroy", Gtk.main_quit)
     # Gtk.main()
-    path = "rtsp://172.18.20.30/live/1"
-    split(path)
+    # path = "rtsp://172.18.20.30/live/1"
+    # split(path)
+    getPlatformInfo()
