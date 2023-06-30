@@ -100,11 +100,12 @@ def count():
     host_ip = utils.get_host_ip()
     json_data = request.get_json()
     print("host_ip=%s,json_data=%s" % (host_ip,json_data))
-    if 'rtsp_url' in json_data and 'callback_url' in json_data:
+    if 'rtsp_url' in json_data and 'callback_url' and 'task_id' in json_data:
         try:
             rtsp_url = json_data['rtsp_url']
             callback_url = json_data['callback_url']
-            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,interface))
+            task_id = json_data["task_id"]
+            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,interface,task_id))
             my_process.start()
             returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
             print("returnURL=%s" % (returnURL))
@@ -116,7 +117,7 @@ def count():
             return (returnMSG)
 
     else:
-        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url和callback_url", "data": ""})
+        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url、callback_url和task_id", "data": ""})
         return (returnMSG)
 
 if __name__ == '__main__':
