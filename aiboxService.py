@@ -96,7 +96,7 @@ def pushimg():
 @app.route('/count', methods=['POST'])
 def count():
     global out_port
-    interface="count"
+    method="count"
     host_ip = utils.get_host_ip()
     json_data = request.get_json()
     print("host_ip=%s,json_data=%s" % (host_ip,json_data))
@@ -105,7 +105,7 @@ def count():
             rtsp_url = json_data['rtsp_url']
             callback_url = json_data['callback_url']
             task_id = json_data["task_id"]
-            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,interface,task_id))
+            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,method,task_id))
             my_process.start()
             returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
             print("returnURL=%s" % (returnURL))

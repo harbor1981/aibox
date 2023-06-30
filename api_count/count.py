@@ -118,7 +118,7 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
             py_nvosd_text_params.display_text = "Frame Number={} Number of Objects={} Vehicle_count={} Person_count={}".format(
                 frame_number, num_rects, obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON])
 
-            httpPost.post_count_result(obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON], callback_url, interface, rtsp_src, task_id)
+            httpPost.post_count_result(obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON], callback_url, method, rtsp_src, task_id)
             # Now set the offsets where the string should appear
             py_nvosd_text_params.x_offset = 10
             py_nvosd_text_params.y_offset = 12
@@ -519,14 +519,14 @@ def parse_args():
     callback_url = args.callback_url
     print(stream_path)
     return stream_path
-def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600,Pcallback_url="",Pinterface="count",Ptask_id=""):
+def invoke(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport=9600, Pcallback_url="", Pmethod="count", Ptask_id=""):
     global codec
     global bitrate
     global stream_path
     global gie
     global rtsp_out_port
     global callback_url
-    global interface
+    global method
     global rtsp_src
     global task_id
     codec = Pcodec
@@ -537,7 +537,7 @@ def invoke(Pcodec='H264',Pbitrate=4000000,Pinput='',Pgie='nvinfer',Pport=9600,Pc
     gie = Pgie
     rtsp_out_port = Pport
     callback_url = Pcallback_url
-    interface = Pinterface
+    method = Pmethod
     rtsp_src = stream_path
     task_id = Ptask_id
     sys.exit(main(stream_path))
