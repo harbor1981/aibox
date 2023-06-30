@@ -330,7 +330,7 @@ def main(args):
     streammux.set_property('height', 1080)
     streammux.set_property('batch-size', number_sources)
     streammux.set_property('batched-push-timeout', 4000000)
-    pgie.set_property('config-file-path', "dsnvanalytics_pgie_config.txt")
+    pgie.set_property('config-file-path', "./dsnvanalytics_pgie_config.txt")
     pgie_batch_size=pgie.get_property("batch-size")
     if(pgie_batch_size != number_sources):
         print("WARNING: Overriding infer-config batch-size",pgie_batch_size," with number of sources ", number_sources," \n")
@@ -345,7 +345,7 @@ def main(args):
 
     #Set properties of tracker
     config = configparser.ConfigParser()
-    config.read('dsnvanalytics_tracker_config.txt')
+    config.read('./dsnvanalytics_tracker_config.txt')
     config.sections()
 
     for key in config['tracker']:

@@ -40,7 +40,7 @@ def callAiboxService(countAPI_url, rtsp_url, callback_url, task_id):
         print('请求失败')
     print(response.text)
 def callStopAIboxService(portNO):
-    url = "http://192.168.200.197:5002/stop"
+    url = "http://192.168.1.11:5002/stop"
     params = {"port": portNO}
     response = requests.get(url, params=params)
     if response.status_code == 200:
@@ -52,8 +52,8 @@ def callStopAIboxService(portNO):
 if __name__ == '__main__':
     # post_count_result(Vehicle_count=0, Person_count=0, callback_url='http://199.19.110.7:7104/api/Callback', interface="count", rtsp_src="rtsp://199.19.110.7:7103/live/park", task_id="task20230630001")
 
-    # callAiboxService(countAPI_url='http://192.168.200.197:5002/count', rtsp_url= "rtsp://199.19.110.7:7103/live/park", callback_url="http://199.19.110.7:7104/api/Callback",task_id="task_20230630001")
-    callStopAIboxService(9601)
+    # callAiboxService(countAPI_url='http://192.168.1.11:5002/count', rtsp_url= "rtsp://199.19.110.7:7103/live/park", callback_url="http://199.19.110.7:7104/api/Callback",task_id="count_20230630001")
+    callStopAIboxService(9600)
 
 
 

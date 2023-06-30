@@ -379,7 +379,7 @@ def main(args):
         sys.stderr.write(" Unable to create rtppay")
 
     # Make the UDP sink
-    updsink_port_num = 5400
+    updsink_port_num = rtsp_out_port-1000
     sink = Gst.ElementFactory.make("udpsink", "udpsink")
     if not sink:
         sys.stderr.write(" Unable to create udpsink")

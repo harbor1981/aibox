@@ -21,6 +21,7 @@ app = Flask(__name__)
 ##r'/*' 是通配符，让本服务器所有的 URL 都允许跨域请求
 CORS(app, resources=r'/*')
 out_port= 9600
+updsink_port_num=5400
 @app.route('/')
 def index():
     return render_template("login.html")
@@ -96,6 +97,7 @@ def pushimg():
 @app.route('/count', methods=['POST'])
 def count():
     global out_port
+    global updsink_port_num
     method="count"
     host_ip = utils.get_host_ip()
     json_data = request.get_json()
@@ -105,11 +107,12 @@ def count():
             rtsp_url = json_data['rtsp_url']
             callback_url = json_data['callback_url']
             task_id = json_data["task_id"]
-            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,method,task_id))
+            my_process = Process(target=invoke, name=task_id,args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,method,task_id))
             my_process.start()
             returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
             print("returnURL=%s" % (returnURL))
             out_port = out_port + 1
+            updsink_port_num = updsink_port_num+1
             returnMSG = json.dumps({"code": 200, "msg": "invoke count process successfully", "data": returnURL})
             return (returnMSG)
         except:
