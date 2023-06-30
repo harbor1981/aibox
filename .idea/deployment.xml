@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="nx@106.14.163.86:6001 password" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeDeletion="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="nx@192.168.1.11:22 password" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeDeletion="false">
     <option name="confirmBeforeDeletion" value="false" />
     <serverData>
-      <paths name="nx@106.14.163.86:6001 password">
+      <paths name="nx@192.168.1.11:22 password">
         <serverdata>
           <mappings>
             <mapping deploy="/opt/nvidia/deepstream/deepstream-6.1/sources/aibox2" local="$PROJECT_DIR$" web="/" />

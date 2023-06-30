@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+# !/usr/bin/python
+# -*- coding: utf-8 -*-
 import base64
 import json
+import sys
 import logging
 import os
 import cv2
@@ -8,6 +12,7 @@ from flask import Flask, redirect, url_for, request, render_template
 import FlaskTest
 import time
 from multiprocessing import Process
+# sys.path.append(".")
 from api_count.count import invoke
 from flask_cors import CORS
 import utils
@@ -91,13 +96,15 @@ def pushimg():
 @app.route('/count', methods=['POST'])
 def count():
     global out_port
+    interface="count"
     host_ip = utils.get_host_ip()
     json_data = request.get_json()
+    print("host_ip=%s,json_data=%s" % (host_ip,json_data))
     if 'rtsp_url' in json_data and 'callback_url' in json_data:
         try:
             rtsp_url = json_data['rtsp_url']
             callback_url = json_data['callback_url']
-            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url))
+            my_process = Process(target=invoke, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,interface))
             my_process.start()
             returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
             print("returnURL=%s" % (returnURL))
@@ -109,7 +116,7 @@ def count():
             return (returnMSG)
 
     else:
-        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url和", "data": ""})
+        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url和callback_url", "data": ""})
         return (returnMSG)
 
 if __name__ == '__main__':
