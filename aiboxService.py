@@ -13,7 +13,8 @@ import FlaskTest
 import time
 from multiprocessing import Process
 # sys.path.append(".")
-from api_count.count import invoke
+from api_count.count import invokeCount
+from api_gate.gate import invokeGate
 from flask_cors import CORS
 import utils
 
@@ -63,7 +64,7 @@ def push2():
       inputURL = request.args.get('url')
       # logging.INFO("inputURL")
       print("inputUrl="+inputURL)
-      my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
+      my_process = Process(target=invokeCount, args=('H264', 4000000, inputURL, 'nvinfer', out_port))
       my_process.start()
       returnURL="rtsp://%s:%d/aibox"%(host_ip,out_port)
       print("returnURL=%s"%(returnURL))
@@ -76,7 +77,7 @@ def push():
       host_ip = utils.get_host_ip()
       inputURL = request.args.get('url')
       print("inputUrl="+inputURL)
-      my_process = Process(target=invoke, args=('H264',4000000,inputURL,'nvinfer',out_port))
+      my_process = Process(target=invokeCount, args=('H264', 4000000, inputURL, 'nvinfer', out_port))
       my_process.start()
       returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
       print("returnURL=%s"%(returnURL))
@@ -107,7 +108,7 @@ def count():
             rtsp_url = json_data['rtsp_url']
             callback_url = json_data['callback_url']
             task_id = json_data["task_id"]
-            my_process = Process(target=invoke, name=task_id,args=('H264', 4000000, rtsp_url, 'nvinfer', out_port,callback_url,method,task_id))
+            my_process = Process(target=invokeCount, name=task_id, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port, callback_url, method, task_id))
             my_process.start()
             returnURL = "rtsp://%s:%d/aibox" % (host_ip, out_port)
             print("returnURL=%s" % (returnURL))
@@ -122,6 +123,37 @@ def count():
     else:
         returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url、callback_url和task_id", "data": ""})
         return (returnMSG)
+
+
+@app.route('/gate', methods=['POST'])
+def gate():
+    global out_port
+    global updsink_port_num
+    method="gate"
+    host_ip = utils.get_host_ip()
+    json_data = request.get_json()
+    print("host_ip=%s,json_data=%s" % (host_ip,json_data))
+    if 'rtsp_url' in json_data and 'callback_url' and 'task_id' in json_data:
+        try:
+            rtsp_url = json_data['rtsp_url']
+            callback_url = json_data['callback_url']
+            task_id = json_data["task_id"]
+            my_process = Process(target=invokeGate, name=task_id, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port, callback_url, method, task_id))
+            my_process.start()
+            returnURL = "rtsp://%s:%d/%s" % (host_ip, out_port,method)
+            print("returnURL=%s" % (returnURL))
+            out_port = out_port + 1
+            updsink_port_num = updsink_port_num+1
+            returnMSG = json.dumps({"code": 200, "msg": "invoke count process successfully", "data": returnURL})
+            return (returnMSG)
+        except:
+            returnMSG = json.dumps({"code": -1, "msg": "exception,please check ", "data": ""})
+            return (returnMSG)
+
+    else:
+        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url、callback_url和task_id", "data": ""})
+        return (returnMSG)
+
 
 if __name__ == '__main__':
 

@@ -60,9 +60,9 @@ class-id=-1
 [line-crossing-stream-0]
 enable=1
 #Label;direction;lc
-line-crossing-Entry=400;500;400;1058;50;500;800;500;
-#line-crossing-Exit=789;672;1084;900;851;773;1203;732
-#line-crossing-manin=1300;500;1300;1058;1150;400;1800;400;
+line-crossing-car_in=400;500;400;1058;50;500;800;500;
+line-crossing-person_in=1300;500;1300;1058;1200;400;1800;400;
+line-crossing-person_out=1400;1058;1400;500;1200;500;1600;500;
 class-id=-1
 #extended when 0- only counts crossing on the configured Line
 #              1- assumes extended Line crossing counts all the crossing
@@ -72,23 +72,6 @@ extended=0
 #balanced: Strict direction adherence expected compared to mode=loose
 #strict  : Strict direction adherence expected compared to mode=balanced
 mode=loose
-
-[line-crossing-stream-0]
-enable=1
-#Label;direction;lc
-line-crossing-manin=1300;500;1300;1058;1200;400;1800;400;
-line-crossing-out=1400;1058;1400;500;1200;500;1600;500;
-#line-crossing-Exit=789;672;1084;900;851;773;1203;732
-class-id=-1
-#extended when 0- only counts crossing on the configured Line
-#              1- assumes extended Line crossing counts all the crossing
-extended=0
-#LC modes supported:
-#loose   : counts all crossing without strong adherence to direction
-#balanced: Strict direction adherence expected compared to mode=loose
-#strict  : Strict direction adherence expected compared to mode=balanced
-mode=loose
-
 
 [line-crossing-stream-1]
 enable=0

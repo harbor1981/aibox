@@ -519,7 +519,7 @@ def parse_args():
     callback_url = args.callback_url
     print(stream_path)
     return stream_path
-def invoke(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport=9600, Pcallback_url="", Pmethod="count", Ptask_id=""):
+def invokeCount(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport=9600, Pcallback_url="", Pmethod="count", Ptask_id=""):
     global codec
     global bitrate
     global stream_path
@@ -545,6 +545,6 @@ def invoke(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport=960
 
 if __name__ == '__main__':
     #stream_path = parse_args()
-    invoke(Pinput='rtsp://199.19.110.7:7103/live/park',Pport=9600)
+    invokeCount(Pinput='rtsp://199.19.110.7:7103/live/park', Pport=9600)
     #sys.exit(main(stream_path))
     print()

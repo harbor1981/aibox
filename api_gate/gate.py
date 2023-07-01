@@ -26,19 +26,16 @@ import gi
 import configparser
 gi.require_version('Gst', '1.0')
 gi.require_version("GstRtspServer", "1.0")
-
 from gi.repository import GLib, Gst,GstRtspServer
-from ctypes import *
-import time
 import sys
 import math
 import platform
 from common.is_aarch_64 import is_aarch64
 from common.bus_call import bus_call
 from common.FPS import PERF_DATA
+import httpPost
 
 import pyds
-
 perf_data = None
 
 MAX_DISPLAY_LEN=64
@@ -85,74 +82,101 @@ def nvanalytics_src_pad_buffer_probe(pad,info,u_data):
 
         frame_number=frame_meta.frame_num
 
-        l_obj=frame_meta.obj_meta_list
-        num_rects = frame_meta.num_obj_meta
-        obj_counter = {
-        PGIE_CLASS_ID_VEHICLE:0,
-        PGIE_CLASS_ID_PERSON:0,
-        PGIE_CLASS_ID_BICYCLE:0,
-        PGIE_CLASS_ID_ROADSIGN:0
-        }
-        print("#"*50)
-        while l_obj:
-            try: 
-                # Note that l_obj.data needs a cast to pyds.NvDsObjectMeta
-                # The casting is done by pyds.NvDsObjectMeta.cast()
-                obj_meta=pyds.NvDsObjectMeta.cast(l_obj.data)
-            except StopIteration:
-                break
-            obj_counter[obj_meta.class_id] += 1
-            l_user_meta = obj_meta.obj_user_meta_list
-            # Extract object level meta data from NvDsAnalyticsObjInfo
-            while l_user_meta:
+        if(frame_number%50==0):
+            l_obj = frame_meta.obj_meta_list
+            num_rects = frame_meta.num_obj_meta
+            obj_counter = {
+                PGIE_CLASS_ID_VEHICLE: 0,
+                PGIE_CLASS_ID_PERSON: 0,
+                PGIE_CLASS_ID_BICYCLE: 0,
+                PGIE_CLASS_ID_ROADSIGN: 0
+            }
+            print("#" * 50)
+            while l_obj:
                 try:
-                    user_meta = pyds.NvDsUserMeta.cast(l_user_meta.data)
-                    if user_meta.base_meta.meta_type == pyds.nvds_get_user_meta_type("NVIDIA.DSANALYTICSOBJ.USER_META"):             
-                        user_meta_data = pyds.NvDsAnalyticsObjInfo.cast(user_meta.user_meta_data)
-                        if user_meta_data.dirStatus: print("Object {0} moving in direction: {1}".format(obj_meta.object_id, user_meta_data.dirStatus))                    
-                        if user_meta_data.lcStatus: print("Object {0} line crossing status: {1}".format(obj_meta.object_id, user_meta_data.lcStatus))
-                        if user_meta_data.ocStatus: print("Object {0} overcrowding status: {1}".format(obj_meta.object_id, user_meta_data.ocStatus))
-                        if user_meta_data.roiStatus: print("Object {0} roi status: {1}".format(obj_meta.object_id, user_meta_data.roiStatus))
+                    # Note that l_obj.data needs a cast to pyds.NvDsObjectMeta
+                    # The casting is done by pyds.NvDsObjectMeta.cast()
+                    obj_meta = pyds.NvDsObjectMeta.cast(l_obj.data)
+                except StopIteration:
+                    break
+                obj_counter[obj_meta.class_id] += 1
+                l_user_meta = obj_meta.obj_user_meta_list
+                # Extract object level meta data from NvDsAnalyticsObjInfo
+                while l_user_meta:
+                    try:
+                        user_meta = pyds.NvDsUserMeta.cast(l_user_meta.data)
+                        if user_meta.base_meta.meta_type == pyds.nvds_get_user_meta_type(
+                                "NVIDIA.DSANALYTICSOBJ.USER_META"):
+                            user_meta_data = pyds.NvDsAnalyticsObjInfo.cast(user_meta.user_meta_data)
+                            if user_meta_data.dirStatus: print(
+                                "Object {0} moving in direction: {1}".format(obj_meta.object_id,
+                                                                             user_meta_data.dirStatus))
+                            if user_meta_data.lcStatus: print(
+                                "Object {0} line crossing status: {1}".format(obj_meta.object_id,
+                                                                              user_meta_data.lcStatus))
+                            if user_meta_data.ocStatus: print(
+                                "Object {0} overcrowding status: {1}".format(obj_meta.object_id,
+                                                                             user_meta_data.ocStatus))
+                            if user_meta_data.roiStatus: print(
+                                "Object {0} roi status: {1}".format(obj_meta.object_id, user_meta_data.roiStatus))
+                    except StopIteration:
+                        break
+
+                    try:
+                        l_user_meta = l_user_meta.next
+                    except StopIteration:
+                        break
+                try:
+                    l_obj = l_obj.next
                 except StopIteration:
                     break
 
+            # Get meta data from NvDsAnalyticsFrameMeta
+            l_user = frame_meta.frame_user_meta_list
+            while l_user:
                 try:
-                    l_user_meta = l_user_meta.next
+                    user_meta = pyds.NvDsUserMeta.cast(l_user.data)
+                    if user_meta.base_meta.meta_type == pyds.nvds_get_user_meta_type(
+                            "NVIDIA.DSANALYTICSFRAME.USER_META"):
+                        user_meta_data = pyds.NvDsAnalyticsFrameMeta.cast(user_meta.user_meta_data)
+                        if user_meta_data.objInROIcnt: print("Objs in ROI: {0}".format(user_meta_data.objInROIcnt))
+                        if user_meta_data.objLCCumCnt: print(
+                            "Linecrossing Cumulative: {0}".format(user_meta_data.objLCCumCnt))
+                        if user_meta_data.objLCCurrCnt: print(
+                            "Linecrossing Current Frame: {0}".format(user_meta_data.objLCCurrCnt))
+                        if user_meta_data.ocStatus: print("Overcrowding status: {0}".format(user_meta_data.ocStatus))
+                        ################################
+                        # print("####################################{0}".format(user_meta_data.objLCCumCnt['car_in']))
+                        car_in = user_meta_data.objLCCumCnt['car_in']
+                        car_out = 0
+                        person_in = user_meta_data.objLCCumCnt['person_in']
+                        person_out = user_meta_data.objLCCumCnt['person_out']
+
+                        httpPost.post_gate_result(car_in, car_out, person_in, person_out, callback_url, method,
+                                                  rtsp_src, task_id)
+
+                        ################################
+
                 except StopIteration:
                     break
-            try: 
-                l_obj=l_obj.next
-            except StopIteration:
-                break
-    
-        # Get meta data from NvDsAnalyticsFrameMeta
-        l_user = frame_meta.frame_user_meta_list
-        while l_user:
-            try:
-                user_meta = pyds.NvDsUserMeta.cast(l_user.data)
-                if user_meta.base_meta.meta_type == pyds.nvds_get_user_meta_type("NVIDIA.DSANALYTICSFRAME.USER_META"):
-                    user_meta_data = pyds.NvDsAnalyticsFrameMeta.cast(user_meta.user_meta_data)
-                    if user_meta_data.objInROIcnt: print("Objs in ROI: {0}".format(user_meta_data.objInROIcnt))                    
-                    if user_meta_data.objLCCumCnt: print("Linecrossing Cumulative: {0}".format(user_meta_data.objLCCumCnt))
-                    if user_meta_data.objLCCurrCnt: print("Linecrossing Current Frame: {0}".format(user_meta_data.objLCCurrCnt))
-                    if user_meta_data.ocStatus: print("Overcrowding status: {0}".format(user_meta_data.ocStatus))
-            except StopIteration:
-                break
-            try:
-                l_user = l_user.next
-            except StopIteration:
-                break
-        
-        print("Frame Number=", frame_number, "stream id=", frame_meta.pad_index, "Number of Objects=",num_rects,"Vehicle_count=",obj_counter[PGIE_CLASS_ID_VEHICLE],"Person_count=",obj_counter[PGIE_CLASS_ID_PERSON])
-        # Update frame rate through this probe
-        stream_index = "stream{0}".format(frame_meta.pad_index)
-        global perf_data
-        perf_data.update_fps(stream_index)
+                try:
+                    l_user = l_user.next
+                except StopIteration:
+                    break
+
+            print("Frame Number=", frame_number, "stream id=", frame_meta.pad_index, "Number of Objects=", num_rects,
+                  "Vehicle_count=", obj_counter[PGIE_CLASS_ID_VEHICLE], "Person_count=",
+                  obj_counter[PGIE_CLASS_ID_PERSON])
+            # Update frame rate through this probe
+            stream_index = "stream{0}".format(frame_meta.pad_index)
+            global perf_data
+            perf_data.update_fps(stream_index)
+            print("#" * 50)
         try:
             l_frame=l_frame.next
         except StopIteration:
             break
-        print("#"*50)
+
 
     return Gst.PadProbeReturn.OK
 
@@ -224,14 +248,14 @@ def create_source_bin(index,uri):
     return nbin
 
 def main(args):
-    # Check input arguments
-    if len(args) < 2:
+    # Check input arguments,暂时改为1
+    if len(args) < 1:
         sys.stderr.write("usage: %s <uri1> [uri2] ... [uriN]\n" % args[0])
         sys.exit(1)
 
     global perf_data
-    perf_data = PERF_DATA(len(args) - 1)
-    number_sources=len(args)-1
+    perf_data = PERF_DATA(len(args))
+    number_sources=len(args)
 
     # Standard GStreamer initialization
     Gst.init(None)
@@ -254,7 +278,7 @@ def main(args):
     pipeline.add(streammux)
     for i in range(number_sources):
         print("Creating source_bin ",i," \n ")
-        uri_name=args[i+1]
+        uri_name=args[i]
         if uri_name.find("rtsp://") == 0 :
             is_live = True
         ## todo create_source_bin
@@ -300,7 +324,7 @@ def main(args):
     nvanalytics = Gst.ElementFactory.make("nvdsanalytics", "analytics")
     if not nvanalytics:
         sys.stderr.write(" Unable to create nvanalytics \n")
-    nvanalytics.set_property("config-file", "config_nvdsanalytics.txt")
+    nvanalytics.set_property("config-file", "./api_gate/config_nvdsanalytics.txt")
 
     print("Creating tiler \n ")
     tiler=Gst.ElementFactory.make("nvmultistreamtiler", "nvtiler")
@@ -337,8 +361,8 @@ def main(args):
     caps.set_property(
         "caps", Gst.Caps.from_string("video/x-raw(memory:NVMM), format=I420")
     )
-    codec="H264"
-    bitrate=4000000
+    # codec="H264"
+    # bitrate=4000000
     # Make the encoder
     if codec == "H264":
         encoder = Gst.ElementFactory.make("nvv4l2h264enc", "encoder")
@@ -389,7 +413,7 @@ def main(args):
     streammux.set_property('batch-size', number_sources)
     streammux.set_property('batched-push-timeout', 4000000)
     ###
-    pgie.set_property('config-file-path', "dsnvanalytics_pgie_config.txt")
+    pgie.set_property('config-file-path', "./api_gate/dsnvanalytics_pgie_config.txt")
     pgie_batch_size=pgie.get_property("batch-size")
     if(pgie_batch_size != number_sources):
         print("WARNING: Overriding infer-config batch-size",pgie_batch_size," with number of sources ", number_sources," \n")
@@ -404,7 +428,7 @@ def main(args):
     sink.set_property("qos",0)
     #Set properties of tracker
     config = configparser.ConfigParser()
-    config.read('dsnvanalytics_tracker_config.txt')
+    config.read('./api_gate/dsnvanalytics_tracker_config.txt')
     config.sections()
 
     for key in config['tracker']:
@@ -505,7 +529,7 @@ def main(args):
     GLib.timeout_add(5000, perf_data.perf_print_callback)
     ##############################################################
     # Start streaming
-    rtsp_port_num = 9600
+    # rtsp_port_num = 9600
 
     server = GstRtspServer.RTSPServer.new()
     server.props.service = "%d" % rtsp_port_num
@@ -517,12 +541,12 @@ def main(args):
         % (updsink_port_num, codec)
     )
     factory.set_shared(True)
-    server.get_mount_points().add_factory("/aibox2", factory)
+    server.get_mount_points().add_factory("/%s"%(method), factory)
     host_ip = utils.get_host_ip()
 
     print(
-        "\n *** DeepStream: Launched RTSP Streaming at rtsp://%s:%d/aibox2 ***\n\n"
-        % (host_ip, rtsp_port_num)
+        "\n *** DeepStream: Launched RTSP Streaming at rtsp://%s:%d/%s ***\n\n"
+        % (host_ip, rtsp_port_num,method)
     )
     ###################################################################
 
@@ -543,5 +567,31 @@ def main(args):
     print("Exiting app\n")
     pipeline.set_state(Gst.State.NULL)
 
+def invokeGate(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport=9600, Pcallback_url="", Pmethod="gate", Ptask_id=""):
+    global codec
+    global bitrate
+    global stream_path
+    global gie
+    global rtsp_port_num
+    global callback_url
+    global method
+    global rtsp_src
+    global task_id
+    codec = Pcodec
+    bitrate = Pbitrate
+    # stream_path = []
+    # stream_path.append(Pinput)
+    stream_path=Pinput.split("|")
+    gie = Pgie
+    rtsp_port_num = Pport
+    callback_url = Pcallback_url
+    method = Pmethod
+    rtsp_src = stream_path
+    task_id = Ptask_id
+    sys.exit(main(stream_path))
+    return stream_path
+
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    # sys.exit(main(sys.argv))
+
+    invokeGate(Pinput='rtsp://199.19.110.7:7103/live/park', Pport=9600)
