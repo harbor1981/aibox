@@ -89,9 +89,37 @@ def generateBigFiles(nums,filePath):
             f.write(''.join(chars))
         a += 1
 
+def updateGateConfig():
+    file_path = "config_nvdsanalytics.txt"
+    fields = ["line-crossing-car_in", "line-crossing-person_in", "line-crossing-person_out"]
+    line_crossing_car_in = "400;500;400;1058;50;500;800;500;"
+    line_crossing_person_in = "400;500;400;1058;50;500;800;500;"
+    line_crossing_person_out = "400;500;400;1058;50;500;800;500;"
+
+
+    new_value = "400;500;400;1058;50;500;800;600;"
+
+    # 读取文件内容
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+
+    # 查找并替换字段值
+    for i, line in enumerate(lines):
+        for field in fields:
+            if line.startswith(field + "="):
+                parts = line.split("=")
+                lines[i] = parts[0] + "=" + new_value + "\n"
+                break
+
+    # 写入更新后的内容
+    with open(file_path, "w") as file:
+        file.writelines(lines)
+
+    print("配置文件更新成功")
+
 
 if __name__ == '__main__':
-    code,msg,data=killProcessByPort(-1)
+    code,msg,data=killProcessByPort(9600)
     print("code=%s,msg=%s,data=%s"%(code,msg,data))
     # killProcessByName("alibaba")
     # generateBigFiles(100,"/home/quejl/files2/")

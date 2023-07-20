@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="admin-nx@199.19.110.7:7400 password" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false" confirmBeforeDeletion="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="admin-nx@199.19.110.7:7400 password (2)" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false" confirmBeforeDeletion="false">
     <option name="confirmBeforeDeletion" value="false" />
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
@@ -13,6 +13,13 @@
             <excludedPath local="true" path="$PROJECT_DIR$/model1" />
             <excludedPath local="true" path="$PROJECT_DIR$/model2" />
           </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="admin-nx@199.19.110.7:7400 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/opt/nvidia/deepstream/deepstream/sources/aibox2" local="$PROJECT_DIR$" />
+          </mappings>
         </serverdata>
       </paths>
     </serverData>
