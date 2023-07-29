@@ -125,20 +125,26 @@ def count():
         return (returnMSG)
 
 
-@app.route('/gate', methods=['POST'])
+@app.route('/countEntryExit', methods=['POST'])
 def gate():
     global out_port
     global updsink_port_num
-    method="gate"
+    method="countEntryExit"
     host_ip = utils.get_host_ip()
     json_data = request.get_json()
     print("host_ip=%s,json_data=%s" % (host_ip,json_data))
-    if 'rtsp_url' in json_data and 'callback_url' and 'task_id' in json_data:
+    if 'rtspSrc' in json_data and 'taskId' in json_data:
         try:
-            rtsp_url = json_data['rtsp_url']
-            callback_url = json_data['callback_url']
-            task_id = json_data["task_id"]
-            my_process = Process(target=invokeGate, name=task_id, args=('H264', 4000000, rtsp_url, 'nvinfer', out_port, callback_url, method, task_id))
+            rtspSrc = json_data['rtspSrc']
+            callbackUrl = json_data['callbackUrl']
+            taskId = json_data["taskId"]
+            lineCrossingCarIn = json_data["lineCrossingCarIn"]
+            lineCrossingCarOut = json_data["lineCrossingCarOut"]
+            lineCrossingPersonIn = json_data["lineCrossingPersonIn"]
+            lineCrossingPersonOut = json_data["lineCrossingPersonOut"]
+
+            my_process = Process(target=invokeGate, name=taskId, args=('H264', 4000000, rtspSrc, 'nvinfer', out_port, callbackUrl, method, taskId,lineCrossingCarIn,
+                                                                       lineCrossingCarOut,lineCrossingPersonIn,lineCrossingPersonOut))
             my_process.start()
             returnURL = "rtsp://%s:%d/%s" % (host_ip, out_port,method)
             print("returnURL=%s" % (returnURL))
@@ -151,7 +157,7 @@ def gate():
             return (returnMSG)
 
     else:
-        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtsp_url、callback_url和task_id", "data": ""})
+        returnMSG = json.dumps({"code": 201, "msg": "错误!请提供rtspSrc、callbackUrl和taskId", "data": ""})
         return (returnMSG)
 
 

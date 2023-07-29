@@ -19,6 +19,7 @@
 
 import sys
 
+import aiboxUtils
 import utils
 
 sys.path.append('../')
@@ -567,7 +568,8 @@ def main(args):
     print("Exiting app\n")
     pipeline.set_state(Gst.State.NULL)
 
-def invokeGate(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport=9600, Pcallback_url="", Pmethod="gate", Ptask_id=""):
+def invokeGate(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport=9600, Pcallback_url="", Pmethod="gate", Ptask_id="",
+               PlineCrossingCarIn="",PlineCrossingCarOut="",PlineCrossingPersonIn="",PlineCrossingPersonOut=""):
     global codec
     global bitrate
     global stream_path
@@ -581,6 +583,8 @@ def invokeGate(Pcodec='H264', Pbitrate=4000000, Pinput='', Pgie='nvinfer', Pport
     bitrate = Pbitrate
     # stream_path = []
     # stream_path.append(Pinput)
+    ##update_date_config
+    aiboxUtils.update_gate_config( "api_gate/config_nvdsanalytics.txt",PlineCrossingCarIn,PlineCrossingCarOut,PlineCrossingPersonIn,PlineCrossingPersonOut)
     stream_path=Pinput.split("|")
     gie = Pgie
     rtsp_port_num = Pport

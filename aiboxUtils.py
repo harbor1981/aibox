@@ -89,38 +89,34 @@ def generateBigFiles(nums,filePath):
             f.write(''.join(chars))
         a += 1
 
-def updateGateConfig():
-    file_path = "config_nvdsanalytics.txt"
-    fields = ["line-crossing-car_in", "line-crossing-person_in", "line-crossing-person_out"]
-    line_crossing_car_in = "400;500;400;1058;50;500;800;500;"
-    line_crossing_person_in = "400;500;400;1058;50;500;800;500;"
-    line_crossing_person_out = "400;500;400;1058;50;500;800;500;"
+def update_gate_config(config_file, lineCrossingCarIn,lineCrossingCarOut,lineCrossingPersonIn,lineCrossingPersonOut):
+    new_values = {
+        "line-crossing-car_in": lineCrossingCarIn,
+        "line-crossing-car_out": lineCrossingCarOut,
+        "line-crossing-person_in": lineCrossingPersonIn,
+        "line-crossing-person_out": lineCrossingPersonOut,
+    }
+    with open(config_file, 'r') as f:
+        lines = f.readlines()
 
+    updated_lines = []
+    for line in lines:
+        key_value = line.strip().split('=')
+        if key_value[0].strip() in new_values:
+            new_value = new_values[key_value[0].strip()]
+            updated_line = f"{key_value[0].strip()} = {new_value}\n"
+            updated_lines.append(updated_line)
+        else:
+            updated_lines.append(line)
 
-    new_value = "400;500;400;1058;50;500;800;600;"
-
-    # 读取文件内容
-    with open(file_path, "r") as file:
-        lines = file.readlines()
-
-    # 查找并替换字段值
-    for i, line in enumerate(lines):
-        for field in fields:
-            if line.startswith(field + "="):
-                parts = line.split("=")
-                lines[i] = parts[0] + "=" + new_value + "\n"
-                break
-
-    # 写入更新后的内容
-    with open(file_path, "w") as file:
-        file.writelines(lines)
-
-    print("配置文件更新成功")
+    with open(config_file, 'w') as f:
+        f.writelines(updated_lines)
+        print("update_gate_config done!")
 
 
 if __name__ == '__main__':
-    code,msg,data=killProcessByPort(9600)
-    print("code=%s,msg=%s,data=%s"%(code,msg,data))
+    # code,msg,data=killProcessByPort(9600)
+    # print("code=%s,msg=%s,data=%s"%(code,msg,data))
     # killProcessByName("alibaba")
     # generateBigFiles(100,"/home/quejl/files2/")
     # generateBigFile()
@@ -128,3 +124,10 @@ if __name__ == '__main__':
     # out_port=5000
     # ps_ports = [out_port]
     # killProcesses(*get_pid(*ps_ports))
+    config_file = "api_gate/config_nvdsanalytics.txt"
+    lineCrossingCarIn="100;500;400;1058;50;500;800;500;"
+    lineCrossingCarOut="100;500;400;1058;50;500;800;500;"
+    lineCrossingPersonIn="100;500;1300;1058;1200;400;1800;400;"
+    lineCrossingPersonOut="100;1058;1400;500;1200;500;1600;500;"
+    update_gate_config("api_gate/config_nvdsanalytics.txt",lineCrossingCarIn,lineCrossingCarOut,lineCrossingPersonIn,lineCrossingPersonOut)
+
