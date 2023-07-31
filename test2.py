@@ -27,26 +27,7 @@ def getRtspInfo(url):
     cv2.destroyAllWindows()
 import cv2
 
-def get_rtsp_info(rtsp_url):
-    cap = cv2.VideoCapture(rtsp_url)
 
-    if not cap.isOpened():
-        print("无法连接到 RTSP 视频流")
-        return
-
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    codec = int(cap.get(cv2.CAP_PROP_FOURCC))
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    # 将四字符编码转换为字符串
-    codec_str = "".join([chr((codec >> 8 * i) & 0xFF) for i in range(4)])
-
-    print("帧率：", fps)
-    print("编码方式：", codec_str)
-    print("分辨率：", f"{width}x{height}")
-
-    cap.release()
 #######################################################3
 import gi
 gi.require_version('Gst', '1.0')
@@ -101,4 +82,4 @@ if __name__ == '__main__':
     # path = "rtsp://172.18.20.30/live/1"
     # split(path)
     # getRtspInfo("../../samples/streams/sample_720p.h264")
-    get_rtsp_info_ds("rtsp://199.19.110.7:7103/live/park")
+    get_rtsp_info("rtsp://199.19.110.7:7402/live/park")

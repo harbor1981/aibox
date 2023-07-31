@@ -4,6 +4,8 @@ import signal
 import string
 import random
 
+import cv2
+import ffmpeg as ffmpeg
 import numpy as np
 import psutil as psutil
 
@@ -114,6 +116,26 @@ def update_gate_config(config_file, lineCrossingCarIn,lineCrossingCarOut,lineCro
         print("update_gate_config done!")
 
 
+def get_rtsp_info(rtsp_url):
+    cap = cv2.VideoCapture(rtsp_url)
+    if not cap.isOpened():
+        print("无法连接到 RTSP 视频流")
+        return
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    codec = int(cap.get(cv2.CAP_PROP_FOURCC))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    # 将四字符编码转换为字符串
+    codec_name = "".join([chr((codec >> 8 * i) & 0xFF) for i in range(4)])
+
+    print("帧率：", fps)
+    print("编码方式：", codec_name)
+    print("分辨率：", f"{width}x{height}")
+    cap.release()
+    return  codec_name
+
 if __name__ == '__main__':
     # code,msg,data=killProcessByPort(9600)
     # print("code=%s,msg=%s,data=%s"%(code,msg,data))
@@ -124,10 +146,13 @@ if __name__ == '__main__':
     # out_port=5000
     # ps_ports = [out_port]
     # killProcesses(*get_pid(*ps_ports))
-    config_file = "api_gate/config_nvdsanalytics.txt"
-    lineCrossingCarIn="100;500;400;1058;50;500;800;500;"
-    lineCrossingCarOut="100;500;400;1058;50;500;800;500;"
-    lineCrossingPersonIn="100;500;1300;1058;1200;400;1800;400;"
-    lineCrossingPersonOut="100;1058;1400;500;1200;500;1600;500;"
-    update_gate_config("api_gate/config_nvdsanalytics.txt",lineCrossingCarIn,lineCrossingCarOut,lineCrossingPersonIn,lineCrossingPersonOut)
+    # config_file = "api_gate/config_nvdsanalytics.txt"
+    # lineCrossingCarIn="100;500;400;1058;50;500;800;500;"
+    # lineCrossingCarOut="100;500;400;1058;50;500;800;500;"
+    # lineCrossingPersonIn="100;500;1300;1058;1200;400;1800;400;"
+    # lineCrossingPersonOut="100;1058;1400;500;1200;500;1600;500;"
+    # update_gate_config("api_gate/config_nvdsanalytics.txt",lineCrossingCarIn,lineCrossingCarOut,lineCrossingPersonIn,lineCrossingPersonOut)
+    rtsp_url = "rtsp://199.19.110.7:7402/live/park"
+    encoding_name = get_rtsp_info(rtsp_url)
+    print("视频流编码信息:", encoding_name)
 
