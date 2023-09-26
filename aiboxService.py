@@ -16,7 +16,9 @@ from multiprocessing import Process
 from api_count.count import invokeCount
 from api_gate.gate import invokeGate
 from flask_cors import CORS
-import utils
+import aiboxUtils as utils
+
+
 
 app = Flask(__name__)
 ##r'/*' 是通配符，让本服务器所有的 URL 都允许跨域请求
@@ -126,7 +128,7 @@ def count():
 
 
 @app.route('/countEntryExit', methods=['POST'])
-def gate():
+def countEntryExit():
     global out_port
     global updsink_port_num
     method="countEntryExit"

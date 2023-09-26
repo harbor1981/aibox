@@ -19,8 +19,8 @@
 
 import sys
 
-import aiboxUtils
-import utils
+import aiboxUtils as utils
+# import utils
 
 sys.path.append('../')
 import gi

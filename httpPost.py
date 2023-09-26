@@ -108,16 +108,16 @@ if __name__ == '__main__':
 
     # post_count_result(Vehicle_count=0, Person_count=0, callbackUrl='http://199.19.110.7:7104/api/Callback', method="count", rtspSrc="rtsp://199.19.110.7:7103/live/park", taskId="task20230630001")
 
-    # callCount(countAPI_url='http://192.168.100.197:5002/countEntryExit', rtspSrc="rtsp://199.19.110.7:7103/live/park", callbackUrl="http://199.19.110.7:7403/api/Callback", taskId="count_20230630001")
-    callGate(gateAPI_url='http://192.168.100.197:5002/countEntryExit',
-             rtspSrc="rtsp://199.19.110.7:7402/live/park",
-             callbackUrl="http://199.19.110.7:7403/api/Callback",
-             taskId="count_20230630001",
-             lineCrossingCarIn="400;500;400;1058;50;500;800;500;",
-             lineCrossingCarOut="400;500;400;1058;50;500;800;500;",
-             lineCrossingPersonIn="1300;500;1300;1058;1200;400;1800;400;",
-             lineCrossingPersonOut="1400;1058;1400;500;1200;500;1600;500;"
-    )
+    callCount(countAPI_url='http://192.168.100.45:5002/count', rtspSrc="rtsp://106.14.163.86:8554/live/test", callbackUrl="http://119.89.76.229:7403/api/Callback", taskId="count_20230630001")
+    # callGate(gateAPI_url='http://192.168.100.197:5002/countEntryExit',
+    #          rtspSrc="rtsp://199.19.110.7:7402/live/park",
+    #          callbackUrl="http://199.19.110.7:7403/api/Callback",
+    #          taskId="count_20230630001",
+    #          lineCrossingCarIn="400;500;400;1058;50;500;800;500;",
+    #          lineCrossingCarOut="400;500;400;1058;50;500;800;500;",
+    #          lineCrossingPersonIn="1300;500;1300;1058;1200;400;1800;400;",
+    #          lineCrossingPersonOut="1400;1058;1400;500;1200;500;1600;500;"
+    # )
 
     # callStopAIboxService(9601)
     # post_gate_result(callbackUrl='http://199.19.110.7:7403/api/Callback')

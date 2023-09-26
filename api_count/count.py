@@ -32,7 +32,7 @@ from gi.repository import Gst, GstRtspServer, GLib
 import configparser
 
 import argparse
-import utils
+import aiboxUtils as utils
 import httpPost
 
 MAX_DISPLAY_LEN = 64
@@ -118,7 +118,7 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
             py_nvosd_text_params.display_text = "Frame Number={} Number of Objects={} Vehicle_count={} Person_count={}".format(
                 frame_number, num_rects, obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON])
 
-            httpPost.post_count_result(obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON], callback_url, method, rtsp_src, task_id)
+            # httpPost.post_count_result(obj_counter[PGIE_CLASS_ID_VEHICLE], obj_counter[PGIE_CLASS_ID_PERSON], callback_url, method, rtsp_src, task_id)
             # Now set the offsets where the string should appear
             py_nvosd_text_params.x_offset = 10
             py_nvosd_text_params.y_offset = 12
